@@ -25,6 +25,21 @@ public class Order {
 
     public Order(String clOrdID, String symbol, Side side,
                  Type type, double price, double qty, SessionID sessionID) {
+        if (clOrdID == null || clOrdID.isBlank()) {
+            throw new IllegalArgumentException("clOrdID cannot be null or blank");
+        }
+        if (symbol == null || symbol.isBlank()) {
+            throw new IllegalArgumentException("symbol cannot be null or blank");
+        }
+        if (side == null) {
+            throw new IllegalArgumentException("side cannot be null");
+        }
+        if (type == null) {
+            throw new IllegalArgumentException("type cannot be null");
+        }
+        if (type == Type.LIMIT && price <= 0) {
+            throw new IllegalArgumentException("price must be positive for LIMIT orders");
+        }
         this.clOrdID   = clOrdID;
         this.symbol    = symbol;
         this.side      = side;

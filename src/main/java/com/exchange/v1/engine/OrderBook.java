@@ -31,8 +31,16 @@ public class OrderBook {
         this.symbol = symbol;
     }
 
-    // Adiciona ordem no lado correto do livro
     public void addOrder(Order order) {
+        if (order.getPrice() < 0) {
+            throw new IllegalArgumentException("Price cannot be negative");
+        }
+        if (order.getPrice() == 0 && order.getType() == Order.Type.LIMIT) {
+            throw new IllegalArgumentException("Price must be positive for LIMIT orders");
+        }
+        if (order.getQty() <= 0) {
+            throw new IllegalArgumentException("Quantity must be positive");
+        }
         if (order.getSide() == Order.Side.BUY) {
             bids.computeIfAbsent(order.getPrice(), k -> new LinkedList<>()).add(order);
         } else {
@@ -90,16 +98,21 @@ public class OrderBook {
                 .orElse(null);
     }
 
-    /**
-     * Remove uma ordem do livro pelo ClOrdID e lado.
-     */
     public void removeOrder(String clOrdID, Order.Side side) {
         TreeMap<Double, LinkedList<Order>> book = (side == Order.Side.BUY) ? bids : asks;
 
-        book.forEach((price, orders) ->
-                orders.removeIf(o -> o.getClOrdID().equals(clOrdID)));
+        boolean found = false;
+        for (LinkedList<Order> orders : book.values()) {
+            if (orders.removeIf(o -> o.getClOrdID().equals(clOrdID))) {
+                found = true;
+                break;
+            }
+        }
 
-        // Remove entradas vazias
         book.entrySet().removeIf(e -> e.getValue().isEmpty());
+
+        if (!found) {
+            throw new IllegalArgumentException("Order not found: " + clOrdID);
+        }
     }
 }

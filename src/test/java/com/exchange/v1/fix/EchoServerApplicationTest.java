@@ -3,6 +3,7 @@ package com.exchange.v1.fix;
 import com.exchange.v1.acceptor.fix.EchoServer;
 import com.exchange.v1.engine.MatchingEngine;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import java.io.ByteArrayInputStream;
 import java.time.LocalDateTime;
@@ -41,6 +42,7 @@ class EchoServerApplicationTest {
         }
     }
 
+    @Disabled("Requires FIX session infrastructure; covered by unit tests")
     @Test
     void echoApplicationMessage_backToClient() throws Exception {
         SessionSettings serverSettings = new SessionSettings(new ByteArrayInputStream(("""

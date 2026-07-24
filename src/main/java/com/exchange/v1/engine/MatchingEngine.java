@@ -104,9 +104,17 @@ public class MatchingEngine {
                 break; // Melhor preço disponível não satisfaz a ordem
             }
 
+            if (entry.getValue().isEmpty()) {
+                book.removeFilledOrders();
+                continue;
+            }
+
             // FIFO — pega a primeira ordem da fila nesse preço
             Order resting = entry.getValue().peek();
-            if (resting == null) break;
+            if (resting == null) {
+                book.removeFilledOrders();
+                continue;
+            }
 
             // Quantidade que será executada = mínimo entre as duas ordens
             double execQty = Math.min(incoming.remainingQty(), resting.remainingQty());
@@ -129,6 +137,9 @@ public class MatchingEngine {
             // Remove a ordem do livro se foi totalmente executada
             if (resting.isFilled()) {
                 entry.getValue().poll(); // Remove o primeiro da fila (FIFO)
+                if (entry.getValue().isEmpty()) {
+                    book.removeFilledOrders();
+                }
             }
         }
     }
